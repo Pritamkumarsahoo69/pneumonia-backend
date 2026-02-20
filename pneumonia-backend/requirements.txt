@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+fastai==2.7.12
+torch
+torchvision
+pillow
+python-multipart
