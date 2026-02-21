@@ -4,6 +4,10 @@ from fastai.learner import load_learner
 from PIL import Image
 import io
 import uvicorn
+import os
+import matplotlib
+
+matplotlib.use("Agg")  # Prevent font cache delay
 
 app = FastAPI()
 
@@ -15,7 +19,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+print("Loading model at startup...")
 learn = load_learner("export.pkl")
+print("Model loaded successfully.")
 
 @app.get("/")
 def home():
@@ -29,9 +35,13 @@ async def predict(file: UploadFile = File(...)):
     pred, pred_idx, probs = learn.predict(img)
 
     return {
-        "prediction": str(pred),
-        "confidence": float(probs[pred_idx])
+    "prediction": str(pred),
+    "probabilities": {
+        model.dls.vocab[i]: float(probs[i])
+        for i in range(len(probs))
     }
+}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=10000)
+    port = int(os.environ.get("PORT", 10000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)

@@ -1,7 +1,8 @@
 fastapi
 uvicorn
-fastai==2.7.12
+fastai
 torch
 torchvision
 pillow
 python-multipart
+ipython
